@@ -6,15 +6,15 @@
   register: result
   until: result is succeeded
 
-# - name: Remove docker-py python module
-#   ansible.builtin.pip:
-#     name: docker-py
-#     state: absent
-#   register: result
-#   until: result is succeeded
+- name: Remove docker-py python module
+  community.general.pipx:
+    name: docker-py
+    state: absent
+  register: result
+  until: result is succeeded
 
 - name: Install docker python module
-  ansible.builtin.pip:
+  community.general.pipx:
     name: docker
     state: present
   register: result
