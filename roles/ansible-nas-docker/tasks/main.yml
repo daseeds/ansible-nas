@@ -7,7 +7,7 @@
   until: result is succeeded
 
 - name: Remove docker-py python module
-  community.general.pipx:
+  ansible.builtin.pip:
     name: docker-py
     state: absent
   register: result
