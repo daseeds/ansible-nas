@@ -44,7 +44,7 @@ logging_stack_enabled: true
 # loki_enabled: true
 cloudflare_ddns_enabled: true
 syncthing_enabled: true
-stats_enabled: true
+# stats_enabled: true
 
 ansible_nas_extra_packages:
   - smartmontools
