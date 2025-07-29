@@ -44,17 +44,17 @@
     ###
     ### Stacks
     ###
-    - role: stats
-      tags:
-        - stats
     - role: logging
       tags:
         - logging
 
-
     ###
     ### Applications
     ###
+    - role: stats
+      tags:
+        - stats
+
     - role: airsonic
       tags:
         - airsonic
