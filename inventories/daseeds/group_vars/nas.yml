@@ -25,6 +25,12 @@ ansible_nas_email: cyril.jean@gmail.com
 # Applications will have subdomain SSL certificates created if Traefik is enabled, e.g. ansible-nas.<your-domain>, nextcloud.<your-domain>
 ansible_nas_domain: hivehub.fr
 
+docker_home: /main_pool/Volume2/docker
+samba_shares_root: /main_pool/Volume3
+nfs_shares_root: /main_pool/Volume3
+
+
+
 
 # Applications
 jellyfin_enabled: true
@@ -35,7 +41,7 @@ glances_enabled: true
 speedtest_tracker_enabled: true
 traefik_enabled: true
 logging_stack_enabled: true
-loki_enabled: true
+# loki_enabled: true
 cloudflare_ddns_enabled: true
 syncthing_enabled: true
 stats_enabled: true
