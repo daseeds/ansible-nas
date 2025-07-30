@@ -57,7 +57,7 @@
     - name: Immich Docker Redis
       community.docker.docker_container:
         name: "immich_redis"
-        image: "image: docker.io/valkey/valkey:8-bookworm@sha256:facc1d2c3462975c34e10fccb167bfa92b0e0dbd992fc282c29a61c3243afb11"
+        image: "docker.io/valkey/valkey:8-bookworm@sha256:facc1d2c3462975c34e10fccb167bfa92b0e0dbd992fc282c29a61c3243afb11"
         pull: true
         networks:
           - name: "{{ immich_network_name }}"
