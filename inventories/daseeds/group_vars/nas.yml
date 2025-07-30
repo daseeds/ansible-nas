@@ -46,6 +46,7 @@ syncthing_enabled: true
 stats_enabled: true
 n8n_enabled: true
 immich_enabled: true
+portainer_enabled: true
 
 ansible_nas_extra_packages:
   - smartmontools

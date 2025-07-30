@@ -8,6 +8,7 @@ immich_data_directory: "{{ docker_home }}/immich-app"
 # network
 immich_port: "9999"
 immich_hostname: "immich-app"
+immich_network_name: "immich"
 
 # specs
 immich_memory: 1g

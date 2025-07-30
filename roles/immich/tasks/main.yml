@@ -20,7 +20,12 @@
         ports:
           - '2283:2283'
         restart_policy: unless-stopped
+        networks:
+          - name: "{{ immich_network_name }}"
+        network_mode: "{{ immich_network_name }}"        
         memory: "{{ immich_memory }}"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"        
         labels:
           traefik.enable: "{{ immich_available_externally | string }}"
           traefik.http.routers.immich.rule: "Host(`{{ immich_hostname }}.{{ ansible_nas_domain }}`)"
@@ -34,6 +39,9 @@
         name: "immich_ml"
         image: "ghcr.io/immich-app/immich-machine-learning:{{ immich_version }}"
         pull: true
+        networks:
+          - name: "{{ immich_network_name }}"
+        network_mode: "{{ immich_network_name }}"              
         volumes:
           - model-cache:/cache        3
         restart_policy: unless-stopped
@@ -43,9 +51,10 @@
         name: "immich_redis"
         image: "image: docker.io/valkey/valkey:8-bookworm@sha256:facc1d2c3462975c34e10fccb167bfa92b0e0dbd992fc282c29a61c3243afb11"
         pull: true
+        networks:
+          - name: "{{ immich_network_name }}"
+        network_mode: "{{ immich_network_name }}"              
         restart_policy: unless-stopped
-        labels:
-          traefik.enable: false
         healthcheck:
           test: redis-cli ping || exit 1
 
@@ -54,6 +63,9 @@
         name: "immich_db"
         image: "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:5f6a838e4e44c8e0e019d0ebfe3ee8952b69afc2809b2c25f7b0119641978e91"
         pull: true
+        networks:
+          - name: "{{ immich_network_name }}"
+        network_mode: "{{ immich_network_name }}"              
         environment:
           POSTGRES_PASSWORD: "{{ immich_db_password }}"
           POSTGRES_USER: "{{ immich_db_username }}"
