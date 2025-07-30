@@ -8,6 +8,10 @@
       with_items:
         - "{{ immich_data_directory }}"
 
+    - name: Create Immich network
+      community.docker.docker_network:
+        name: "{{ immich_network_name }}"
+
     - name: Immich Docker Container
       community.docker.docker_container:
         name: "immich_server"
