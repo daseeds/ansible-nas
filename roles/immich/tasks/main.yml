@@ -74,14 +74,13 @@
         networks:
           - name: "{{ immich_network_name }}"
         network_mode: "{{ immich_network_name }}"              
-        environment:
+        env:
           POSTGRES_PASSWORD: "{{ immich_db_password }}"
           POSTGRES_USER: "{{ immich_db_username }}"
           POSTGRES_DB: "{{ immich_db_database_name }}"
           POSTGRES_INITDB_ARGS: '--data-checksums'
           # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
           DB_STORAGE_TYPE: 'HDD'
-        shm_size: 128mb
         restart_policy: unless-stopped
   when: immich_enabled is true
 
