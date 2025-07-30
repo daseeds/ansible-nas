@@ -1,0 +1,29 @@
+---
+immich_enabled: false
+immich_available_externally: false
+
+# directories
+immich_data_directory: "{{ docker_home }}/immich-app"
+
+# network
+immich_port: "9999"
+immich_hostname: "immich-app"
+
+# specs
+immich_memory: 1g
+
+# docker
+immich_container_name: immich-app
+
+immich_version: release
+
+immich_upload_location: "{{ photos_root }}"
+
+# Connection secret for postgres. You should change it to a random password
+# Please use only the characters `A-Za-z0-9`, without special characters or spaces
+immich_db_password: postgres
+
+# The values below this line do not need to be changed
+###################################################################################
+immich_db_username: postgres
+immich_db_database_name: immich

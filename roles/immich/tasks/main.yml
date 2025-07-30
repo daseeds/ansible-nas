@@ -1,0 +1,89 @@
+---
+- name: Start Immich
+  block:
+    - name: Create Immich Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ immich_data_directory }}"
+
+    - name: Immich Docker Container
+      community.docker.docker_container:
+        name: "immich_server"
+        image: "ghcr.io/immich-app/immich-server:{{ immich_version }}"
+        pull: true
+        volumes:
+          # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
+          - "{{ immich_upload_location }}:/usr/src/app/upload"
+          - /etc/localtime:/etc/localtime:ro
+        ports:
+          - '2283:2283'
+        restart_policy: unless-stopped
+        memory: "{{ immich_memory }}"
+        labels:
+          traefik.enable: "{{ immich_available_externally | string }}"
+          traefik.http.routers.immich.rule: "Host(`{{ immich_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.immich.tls.certresolver: "letsencrypt"
+          traefik.http.routers.immich.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.immich.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.immich.loadbalancer.server.port: "2283"
+
+    - name: Immich Docker Machine Learning
+      community.docker.docker_container:
+        name: "immich_ml"
+        image: "ghcr.io/immich-app/immich-machine-learning:{{ immich_version }}"
+        pull: true
+        volumes:
+          - model-cache:/cache        3
+        restart_policy: unless-stopped
+    
+    - name: Immich Docker Redis
+      community.docker.docker_container:
+        name: "immich_redis"
+        image: "image: docker.io/valkey/valkey:8-bookworm@sha256:facc1d2c3462975c34e10fccb167bfa92b0e0dbd992fc282c29a61c3243afb11"
+        pull: true
+        restart_policy: unless-stopped
+        labels:
+          traefik.enable: false
+        healthcheck:
+          test: redis-cli ping || exit 1
+
+    - name: Immich Docker Database
+      community.docker.docker_container:
+        name: "immich_db"
+        image: "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:5f6a838e4e44c8e0e019d0ebfe3ee8952b69afc2809b2c25f7b0119641978e91"
+        pull: true
+      environment:
+        POSTGRES_PASSWORD: "{{ immich_db_password }}"
+        POSTGRES_USER: "{{ immich_db_username }}"
+        POSTGRES_DB: "{{ immich_db_database_name }}"
+        POSTGRES_INITDB_ARGS: '--data-checksums'
+        # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
+        DB_STORAGE_TYPE: 'HDD'
+      shm_size: 128mb
+      restart_policy: unless-stopped
+  when: immich_enabled is true
+
+- name: Stop Immich
+  block:
+    - name: Stop Immich Application
+      community.docker.docker_container:
+        name: immich_server
+        state: absent
+
+    - name: Stop Immich Application
+      community.docker.docker_container:
+        name: "immich_ml"
+        state: absent
+
+    - name: Stop Immich Application
+      community.docker.docker_container:
+        name: "immich_redis"
+        state: absent
+
+    - name: Stop Immich Application
+      community.docker.docker_container:
+        name: "immich_db"
+        state: absent
+  when: immich_enabled is false
