@@ -40,7 +40,7 @@ homeassistant_enabled: true
 glances_enabled: true
 speedtest_tracker_enabled: true
 traefik_enabled: true
-logging_stack_enabled: true
+logging_stack_enabled: false
 cloudflare_ddns_enabled: true
 syncthing_enabled: true
 stats_enabled: true
