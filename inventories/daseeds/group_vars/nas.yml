@@ -46,6 +46,8 @@ syncthing_enabled: true
 stats_enabled: true
 n8n_enabled: true
 immich_enabled: true
+immich_available_externally: true
+
 portainer_enabled: true
 portainer_port: "9001"
 
