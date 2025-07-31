@@ -61,4 +61,3 @@ ansible_nas_extra_packages:
   - lm-sensors
   - cron
   - iotop
-  - iostat
