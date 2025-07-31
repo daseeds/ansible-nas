@@ -43,7 +43,7 @@ traefik_enabled: true
 logging_stack_enabled: false
 cloudflare_ddns_enabled: true
 syncthing_enabled: true
-stats_enabled: true
+stats_enabled: false
 n8n_enabled: true
 immich_enabled: true
 immich_available_externally: true
@@ -60,3 +60,5 @@ ansible_nas_extra_packages:
   - unzip
   - lm-sensors
   - cron
+  - iotop
+  - iostat
