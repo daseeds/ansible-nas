@@ -33,22 +33,22 @@ nfs_shares_root: /main_pool/Volume3
 
 
 # Applications
-jellyfin_enabled: true
-radarr_enabled: true
-overseerr_enabled: true
-homeassistant_enabled: true
-glances_enabled: true
-speedtest_tracker_enabled: true
-traefik_enabled: true
+jellyfin_enabled: false
+radarr_enabled: false
+overseerr_enabled: false
+homeassistant_enabled: false
+glances_enabled: false
+speedtest_tracker_enabled: false
+traefik_enabled: false
 logging_stack_enabled: false
-cloudflare_ddns_enabled: true
-syncthing_enabled: true
+cloudflare_ddns_enabled: false
+syncthing_enabled: false
 stats_enabled: false
-n8n_enabled: true
-immich_enabled: true
-immich_available_externally: true
+n8n_enabled: false
+immich_enabled: false
+immich_available_externally: false
 
-portainer_enabled: true
+portainer_enabled: false
 portainer_port: "9001"
 
 
@@ -61,3 +61,4 @@ ansible_nas_extra_packages:
   - lm-sensors
   - cron
   - iotop
+  - hdparm
