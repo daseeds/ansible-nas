@@ -14,7 +14,7 @@ ansible_nas_hostname: athena
 ansible_nas_timezone: Europe/Paris
 
 ## Enable some applications
-homepage_enabled: true
+homepage_enabled: false
 
 # Will be added to the docker group to give user command line access to docker
 ansible_nas_user: daseeds
