@@ -25,7 +25,7 @@ ansible_nas_email: cyril.jean@gmail.com
 # Applications will have subdomain SSL certificates created if Traefik is enabled, e.g. ansible-nas.<your-domain>, nextcloud.<your-domain>
 ansible_nas_domain: hivehub.fr
 
-docker_home: /main_pool/Volume2/docker
+docker_home: /home/ansible-nas/docker
 samba_shares_root: /main_pool/Volume3
 nfs_shares_root: /main_pool/Volume3
 
@@ -48,7 +48,7 @@ n8n_enabled: false
 immich_enabled: false
 immich_available_externally: false
 
-portainer_enabled: false
+portainer_enabled: true
 portainer_port: "9001"
 
 
