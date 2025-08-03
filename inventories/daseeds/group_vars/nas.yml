@@ -37,15 +37,15 @@ jellyfin_enabled: false
 radarr_enabled: false
 overseerr_enabled: false
 homeassistant_enabled: false
-glances_enabled: false
+glances_enabled: true
 speedtest_tracker_enabled: false
-traefik_enabled: false
+traefik_enabled: true
 logging_stack_enabled: false
 cloudflare_ddns_enabled: false
 syncthing_enabled: false
 stats_enabled: false
 n8n_enabled: false
-immich_enabled: false
+immich_enabled: true
 immich_available_externally: false
 
 portainer_enabled: true
