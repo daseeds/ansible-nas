@@ -50,7 +50,7 @@ n8n_enabled: false
 immich_enabled: true
 immich_db_data_location: "{{ docker_home }}/immich_db"
 immich_upload_location: "{{ zfs_root }}/immich/content"
-immich_available_externally: false
+immich_available_externally: true
 
 portainer_enabled: true
 portainer_port: "9001"
