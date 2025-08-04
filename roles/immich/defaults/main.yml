@@ -3,7 +3,7 @@ immich_enabled: false
 immich_available_externally: false
 
 # directories
-immich_data_directory: "{{ docker_home }}/immich-app"
+immich_db_data_location: "{{ docker_home }}/immich/db"
 
 # network
 immich_port: "9999"

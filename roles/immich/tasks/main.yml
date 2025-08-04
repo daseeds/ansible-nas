@@ -6,7 +6,8 @@
         path: "{{ item }}"
         state: directory
       with_items:
-        - "{{ immich_data_directory }}"
+        - "{{ immich_db_data_location }}"
+        - "{{ immich_upload_location }}"
 
     - name: Create Immich network
       community.docker.docker_network:
@@ -19,7 +20,7 @@
         pull: true
         volumes:
           # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
-          - "{{ immich_upload_location }}:/usr/src/app/upload"
+          - "{{ immich_upload_location }}:/data"
           - /etc/localtime:/etc/localtime:ro
         ports:
           - '2283:2283'
@@ -85,6 +86,9 @@
           # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
           DB_STORAGE_TYPE: 'HDD'
         restart_policy: unless-stopped
+        volumes:
+          # Do not edit the next line. If you want to change the database storage location on your system, edit the value of DB_DATA_LOCATION in the .env file
+          - "{{ immich_db_data_location }}":/var/lib/postgresql/data        
   when: immich_enabled is true
 
 - name: Stop Immich

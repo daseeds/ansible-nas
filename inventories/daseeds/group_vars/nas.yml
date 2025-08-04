@@ -26,8 +26,9 @@ ansible_nas_email: cyril.jean@gmail.com
 ansible_nas_domain: hivehub.fr
 
 docker_home: /home/ansible-nas/docker
-samba_shares_root: /main_pool/Volume3
-nfs_shares_root: /main_pool/Volume3
+zfs_root: /main_pool
+samba_shares_root: "{{ zfs_root }}/share"
+nfs_shares_root: "{{ zfs_root }}/share"
 
 
 
@@ -45,7 +46,10 @@ cloudflare_ddns_enabled: false
 syncthing_enabled: false
 stats_enabled: false
 n8n_enabled: false
-immich_enabled: false
+
+immich_enabled: true
+immich_db_data_location: "{{ zfs_root }}/immich/db"
+immich_upload_location: "{{ zfs_root }}/immich/content"
 immich_available_externally: false
 
 portainer_enabled: true
