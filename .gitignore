@@ -3,6 +3,7 @@ site
 .vagrant
 *.retry
 *.log
+vault.yml
 
 .cache
 roles/bertvv.samba
