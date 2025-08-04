@@ -7,7 +7,7 @@ immich_db_data_location: "{{ docker_home }}/immich/db"
 
 # network
 immich_port: "9999"
-immich_hostname: "immich-app"
+immich_hostname: "immich"
 immich_network_name: "immich"
 
 # specs
