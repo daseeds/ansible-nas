@@ -48,7 +48,7 @@ stats_enabled: false
 n8n_enabled: false
 
 immich_enabled: true
-immich_db_data_location: "{{ zfs_root }}/immich/db"
+immich_db_data_location: "{{ docker_home }}/immich_db"
 immich_upload_location: "{{ zfs_root }}/immich/content"
 immich_available_externally: false
 
