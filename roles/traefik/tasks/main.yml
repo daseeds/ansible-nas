@@ -17,11 +17,7 @@
 
     - name: Debug
       ansible.builtin.debug:
-        msg: "{{ traefik_api_email }}"
-
-    - name: Debug
-      ansible.builtin.debug:
-        msg: "{{ traefik_dns_api_token }}"
+        msg: "{{ traefik_environment_variables }}"
 
     - name: Traefik Docker Container
       community.docker.docker_container:
