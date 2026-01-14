@@ -14,7 +14,7 @@ ansible_nas_hostname: athena
 ansible_nas_timezone: Europe/Paris
 
 ## Enable some applications
-homepage_enabled: false
+homepage_enabled: true
 
 # Will be added to the docker group to give user command line access to docker
 ansible_nas_user: daseeds
@@ -31,21 +31,76 @@ samba_shares_root: "{{ zfs_root }}/share"
 nfs_shares_root: "{{ zfs_root }}/share"
 
 
+downloads_root: "{{ samba_shares_root }}/downloads"
+
+# Where your movies are stored
+movies_root: "{{ samba_shares_root }}/movies"
+
+# Where your TV episodes are stored
+tv_root: "{{ samba_shares_root }}/tv"
+
+# Where torrent files are stored (picked up by Transmission for downloading)
+torrents_root: "{{ samba_shares_root }}/torrents"
+
+# Where music is stored
+music_root: "{{ samba_shares_root }}/music"
+
+# Where podcasts are stored
+podcasts_root: "{{ samba_shares_root }}/podcasts"
+
+# Where your books are stored
+books_root: "{{ samba_shares_root }}/books"
+
+# Where your audiobooks are stored
+audiobooks_root: "{{ samba_shares_root }}/audiobooks"
+
+# Where your comics are stored
+comics_root: "{{ samba_shares_root }}/comics"
+
+# Where photos are stored
+photos_root: "{{ samba_shares_root }}/photos"
+
+# Where paperless_ng consumes documents
+documents_root: "{{ samba_shares_root }}/documents"
+
+# Where personal repos and code are stored
+code_root: "{{ samba_shares_root }}/code"
+
+# Where roms are stored
+roms_root: "{{ samba_shares_root }}/roms"
+
+# Where video and audio recordings are stored
+recordings_root: "{{ samba_shares_root }}/recordings"
+
 
 
 # Applications
-jellyfin_enabled: false
-radarr_enabled: false
+jellyfin_enabled: true
+radarr_enabled: true
 overseerr_enabled: false
+bazarr_enabled: true
 homeassistant_enabled: false
 glances_enabled: true
-speedtest_tracker_enabled: false
-traefik_enabled: true
+speedtest_enabled: true
+traefik_enabled: false
 logging_stack_enabled: false
 cloudflare_ddns_enabled: false
 syncthing_enabled: false
 stats_enabled: false
 n8n_enabled: false
+newt_enabled: false
+flaresolverr_enabled: true
+utorrent_enabled: false
+qbittorrent_enabled: true
+prowlarr_enabled: true
+lidarr_enabled: true
+jellyseerr_enabled: true
+sonarr_enabled: true
+
+
+restic_enabled: false
+restic_aws_region: eu-west-3
+restic_repository: s3:https://s3.amazonaws.com/bucelle-immich-backup
 
 immich_enabled: true
 immich_db_data_location: "{{ docker_home }}/immich_db"
@@ -66,3 +121,42 @@ ansible_nas_extra_packages:
   - cron
   - iotop
   - hdparm
+
+#Backup with restic
+
+restic_create_schedule: true
+restic_repos:
+  # aws:
+  #   location: "{{ restic_repository }}"
+  #   password: "{{ restic_password }}"
+  #   init: true
+  #   aws_access_key: "{{ restic_key_id }}"
+  #   aws_secret_access_key: "{{ restic_key }}"
+  #   aws_default_region: "{{ restic_aws_region }}"
+  borgbase:
+    location: "{{ borg_repo }}"
+    password: "{{ borg_restic }}"
+    init: false
+restic_backups:
+  immich_media:
+    name: immich_media
+    repo: borgbase
+    src: "{{ immich_upload_location }}"
+    scheduled: true
+    schedule_oncalendar: '*-*-* 01:30:00'
+    niceness: 10
+    exclude:
+        exclude:
+          - "{{ immich_upload_location }}/thumbs"
+          - "{{ immich_upload_location }}/encoded-video"
+  immich_database:
+    name: immich_database
+    repo: borgbase
+    stdin: true
+    stdin_cmd: docker exec -t immich_db pg_dumpall --clean --if-exists --username=postgres | gzip
+    stdin_filename: dump.sql.gz
+    scheduled: true
+    schedule_oncalendar: '*-*-* 01:00:00'
+    niceness: 10
+
+

@@ -215,6 +215,10 @@
       tags:
         - jellyfin
 
+    - role: jellyseerr
+      tags:
+        - jellyseerr
+
     - role: joomla
       tags:
         - joomla
@@ -436,6 +440,10 @@
     - role: utorrent
       tags:
         - utorrent
+        
+    - role: qbittorrent
+      tags:
+        - qbittorrent
 
     - role: valheim
       tags:
@@ -468,3 +476,11 @@
     - role: znc
       tags:
         - znc
+
+    - role: newt
+      tags:
+        - newt
+
+  ## Backup
+    - role: roles-ansible.restic
+      tags: restic
