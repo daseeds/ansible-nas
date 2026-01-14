@@ -1,0 +1,11 @@
+---
+newt_enabled: false
+
+# specs
+newt_memory: 1g
+
+# docker
+newt_container_name: newt
+
+newt_version: release
+

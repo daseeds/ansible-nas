@@ -15,6 +15,10 @@
         dest: "{{ traefik_data_directory }}/traefik.toml"
       register: template_config
 
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ traefik_environment_variables }}"
+
     - name: Traefik Docker Container
       community.docker.docker_container:
         name: "{{ traefik_container_name }}"

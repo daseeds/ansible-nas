@@ -3,7 +3,9 @@ site
 .vagrant
 *.retry
 *.log
-inventories
+vault.yml
+*.secret
+
 .cache
 roles/bertvv.samba
 roles/geerlingguy.docker
@@ -19,3 +21,4 @@ Session.vim
 
 # IntelliJ
 /.idea/
+inventories/daseeds/group_vars/Untitled-1.json

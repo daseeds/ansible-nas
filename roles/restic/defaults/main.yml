@@ -1,0 +1,11 @@
+---
+restic_enabled: false
+
+# specs
+restic_memory: 1g
+
+# docker
+restic_container_name: restic
+
+restic_version: release
+

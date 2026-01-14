@@ -1,0 +1,26 @@
+---
+- name: Start Restic
+  block:
+    - name: Restic Docker Container
+      community.docker.docker_container:
+        name: "{{ restic_container_name }}"
+        image: "restic/restic"
+        pull: true
+        memory: "{{ restic_memory }}"
+        env:
+          AWS_DEFAULT_REGION: "{{ restic_aws_region }}"
+          RESTIC_REPOSITORY: "{{ restic_repository }}"
+          AWS_ACCESS_KEY_ID: "{{ restic_key_id }}"
+          AWS_SECRET_ACCESS_KEY: "{{ restic_key }}"
+          RESTIC_PASSWORD: "{{ restic_password }}"
+        state: present
+  when: restic_enabled is true
+
+- name: Stop Immich
+  block:
+    - name: Stop Restic Application
+      community.docker.docker_container:
+        name: "{{ restic_container_name: }}"
+        state: absent
+
+  when: restic_enabled is false
