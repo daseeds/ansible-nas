@@ -187,6 +187,10 @@
       tags:
         - hello_world
 
+    - role: matter
+      tags:
+        - matter
+
     - role: homeassistant
       tags:
         - homeassistant
@@ -298,6 +302,10 @@
     - role: nextcloud
       tags:
         - nextcloud
+
+    - role: nextcloud_aio
+      tags:
+        - nextcloud_aio
 
     - role: nomad
       tags:
@@ -481,6 +489,12 @@
       tags:
         - newt
 
+    - role: musicassistant
+      tags:
+        - musicassistant
+    - role: xyops
+      tags:
+        - xyops
   ## Backup
     - role: roles-ansible.restic
       tags: restic

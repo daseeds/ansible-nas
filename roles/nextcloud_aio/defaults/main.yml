@@ -1,0 +1,22 @@
+---
+nextcloud_aio_enabled: false
+nextcloud_aio_available_externally: false
+
+# directories
+nextcloud_aio_config_directory: "{{ docker_home }}/nextcloud_aio/nextcloud_aio_mastercontainer"
+nextcloud_aio_data_directory: "{{ zfs_root }}/ncdata"
+
+# network
+nextcloud_aio_portacme: "80"
+nextcloud_aio_portnossl: "8080"
+nextcloud_aio_portssl: "8443"
+nextcloud_aio_hostname: "nextcloud.lan"
+nextcloud_aio_network_name: "nextcloud_aio"
+
+# docker
+nextcloud_aio_container_name: "nextcloud-aio-mastercontainer"
+nextcloud_aio_image_name: "ghcr.io/nextcloud-releases/all-in-one"
+nextcloud_aio_image_version: "latest"
+
+# specs
+nextcloud_aio_memory: 4g

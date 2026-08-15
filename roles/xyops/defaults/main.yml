@@ -1,0 +1,19 @@
+---
+xyops_enabled: false
+xyops_available_externally: false
+
+# directories
+xyops_data_directory: "{{ docker_home }}/xyops"
+
+# network
+xyops_port: "5522"
+xyops_port2: "5523"
+xyops_hostname: "xyops01"
+
+# docker
+xyops_container_name: "xyops01"
+xyops_image_name: "ghcr.io/pixlcore/xyops"
+xyops_image_version: latest
+
+# specs
+xyops_memory: 2g

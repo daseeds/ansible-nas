@@ -72,6 +72,151 @@ roms_root: "{{ samba_shares_root }}/roms"
 # Where video and audio recordings are stored
 recordings_root: "{{ samba_shares_root }}/recordings"
 
+# The description that'll appear next to your Ansible-NAS box when browsing your network
+samba_server_string: Ansible NAS
+
+# Shares you want published over Samba.
+samba_shares:
+  - name: downloads
+    comment: "Stuff downloaded"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ downloads_root }}"
+
+  - name: movies
+    comment: "Movies"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ movies_root }}"
+
+  - name: tv
+    comment: "TV Episodes"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ tv_root }}"
+
+  - name: music
+    comment: "Music"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ music_root }}"
+
+  - name: podcasts
+    comment: "Podcasts"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ podcasts_root }}"
+
+  - name: dump
+    comment: "File dump"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ samba_shares_root }}/dump"
+
+  - name: games
+    comment: "Games"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ samba_shares_root }}/games"
+
+  - name: photos
+    comment: "Pictures"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ photos_root }}"
+
+  - name: books
+    comment: "Books"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ books_root }}"
+
+  - name: audiobooks
+    comment: "Audiobooks"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browsable: yes
+    path: "{{ audiobooks_root }}"
+
+  - name: comics
+    comment: "Comics"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ comics_root }}"
+
+  - name: documents
+    comment: "Documents"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ documents_root }}"
+
+  - name: code
+    comment: "Code"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ code_root }}"
+
+  - name: recordings
+    comment: "Recordings"
+    guest_ok: yes
+    public: yes
+    writable: yes
+    browseable: yes
+    path: "{{ recordings_root }}"
+
+###
+### NFS
+###
+# Data you want published over NFS. More info on the NFS config format can be found at
+# https://help.ubuntu.com/community/SettingUpNFSHowTo#Shares
+# WARNING: Weird things might happen if you share the same data over Samba and NFS and allow writes on both!
+
+nfs_exports:
+  - "{{ nfs_shares_root }}/public *(rw,sync,no_root_squash)"
+
+###
+### Samba
+###
+# Seems to break browsing of the \\server-name shares root when enabled
+samba_mitigate_cve_2017_7494: false
+
+# Enable apple extensions for compatibility with apple clients
+samba_apple_extensions: yes
+
+# The account used when Samba shares are accessed. Shouldn't need to change this unless you want to
+# mess with Samba user permissions.
+samba_guest_account: ansible-nas
+
+# How Samba behaves when an unknown user connects, see Samba docs for more info
+samba_map_to_guest: Bad Password
+
+# The NetBIOS hostname used by Samba on your network
+samba_netbios_name: "{{ ansible_nas_hostname }}"
 
 
 # Applications
@@ -79,7 +224,7 @@ jellyfin_enabled: true
 radarr_enabled: true
 overseerr_enabled: false
 bazarr_enabled: true
-homeassistant_enabled: false
+homeassistant_enabled: true
 glances_enabled: true
 speedtest_enabled: true
 traefik_enabled: false
@@ -96,7 +241,11 @@ prowlarr_enabled: true
 lidarr_enabled: true
 jellyseerr_enabled: true
 sonarr_enabled: true
-
+musicassistant_enabled: true
+xyops_enabled: true
+xyops_hostname: "xyops.lan"
+nextcloud_aio_enabled: false
+matter_enabled: true
 
 restic_enabled: false
 restic_aws_region: eu-west-3

@@ -8,8 +8,8 @@ qbittorrent_download_directory: "{{ downloads_root }}"
 qbittorrent_download_directory_active: "{{ downloads_root }}/.incomplete"
 
 # uid / gid
-qbittorrent_user_id: "1000"
-qbittorrent_group_id: "1000"
+qbittorrent_user_id: "999"
+qbittorrent_group_id: "1001"
 
 # network
 qbittorrent_port_http: "8701"

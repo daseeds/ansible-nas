@@ -1,0 +1,38 @@
+---
+- name: Start xyops
+  block:
+    - name: Create xyops Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ xyops_data_directory }}/config"
+
+    - name: Home xyops Docker Container
+      community.docker.docker_container:
+        name: "{{ xyops_container_name }}"
+        image: "{{ xyops_image_name }}:{{ xyops_image_version }}"
+        pull: true
+        hostname: "{{ xyops_hostname }}"
+        volumes:
+          - "{{ xyops_data_directory }}/data:/opt/xyops/data"
+          - "{{ xyops_data_directory }}/config:/opt/xyops/conf"
+          - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+          - "{{ xyops_port }}:5522"
+          - "{{ xyops_port2 }}:5523"
+        init: true
+        restart_policy: unless-stopped
+        memory: "{{ xyops_memory }}"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          XYOPS_xysat_local: "true"
+  when: xyops_enabled is true
+
+- name: Stop xyops
+  block:
+    - name: Stop xyops
+      community.docker.docker_container:
+        name: "{{ xyops_container_name }}"
+        state: absent
+  when: xyops_enabled is false
