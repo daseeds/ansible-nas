@@ -1,0 +1,41 @@
+---
+- name: Start zwavejs
+  block:
+    - name: Create zwavejs Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ zwavejs_data_directory }}"
+
+    - name: zwavejs Docker Container
+      community.docker.docker_container:
+        name: "{{ zwavejs_container_name }}"
+        image: "{{ zwavejs_image_name }}:{{ zwavejs_image_version }}"
+        pull: true
+        tty: true
+        stop_signal: SIGINT
+        devices:
+          - "{{ zwavejs_device}}:/dev/zwave"
+        volumes:
+          - "{{ zwavejs_data_directory }}:/usr/src/app/store"
+        network_mode: host
+        restart_policy: unless-stopped
+        memory: "{{ zwavejs_memory }}"
+        security_opts:
+          - apparmor:unconfined
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          LOG_LEVEL: "info"
+        ports:
+          - "{{ zwavejs_port }}:8091"
+          - "{{ zwavejs_port_ws }}:3000"
+  when: zwavejs_enabled is true
+
+- name: Stop zwavejs
+  block:
+    - name: Stop zwavejs
+      community.docker.docker_container:
+        name: "{{ zwavejs_container_name }}"
+        state: absent
+  when: zwavejs_enabled is false

@@ -191,6 +191,10 @@
       tags:
         - matter
 
+    - role: zwavejs
+      tags:
+        - zwavejs
+
     - role: homeassistant
       tags:
         - homeassistant

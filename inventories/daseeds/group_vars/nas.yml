@@ -239,13 +239,16 @@ utorrent_enabled: false
 qbittorrent_enabled: true
 prowlarr_enabled: true
 lidarr_enabled: true
-jellyseerr_enabled: true
+jellyseerr_enabled: false
+seer_enabled: true
 sonarr_enabled: true
 musicassistant_enabled: true
 xyops_enabled: true
 xyops_hostname: "xyops.lan"
 nextcloud_aio_enabled: false
 matter_enabled: true
+zwavejs_enabled: true
+
 
 restic_enabled: false
 restic_aws_region: eu-west-3

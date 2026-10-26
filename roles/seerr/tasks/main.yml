@@ -1,0 +1,55 @@
+---
+- name: Start seer
+  block:
+    - name: Create seer Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: 1000
+        group: 1000
+      with_items:
+        - "{{ seer_config_directory }}"
+
+    - name: seer Docker Container
+      community.docker.docker_container:
+        name: "{{ seer_container_name }}"
+        image: "{{ seer_image_name }}:{{ seer_image_version }}"
+        pull: true
+        volumes:
+          - "{{ seer_config_directory }}:/app/config:rw"
+        ports:
+          - "{{ seer_port_http }}:5055"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          LOG_LEVEL: "info"
+        restart_policy: unless-stopped
+        memory: "{{ seer_memory }}"
+        healthcheck:
+          test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+          start_period: 20s
+          timeout: 3s
+          interval: 15s
+          retries: 3
+        security_opts:
+          - no-new-privileges
+        cap_drop:
+          - all
+        labels:
+          traefik.enable: "{{ seer_available_externally | string }}"
+          traefik.http.routers.jellyfin.rule: "Host(`{{ seer_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.jellyfin.tls.certresolver: "letsencrypt"
+          traefik.http.routers.jellyfin.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.jellyfin.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
+          homepage.group: Media
+          homepage.name: Seer
+          homepage.href: "http://{{ seer_hostname }}:{{ seer_port_http }}"
+  when: seer_enabled is true
+
+- name: Stop seer
+  block:
+    - name: Stop seer
+      community.docker.docker_container:
+        name: "{{ seer_container_name }}"
+        state: absent
+  when: seer_enabled is false

@@ -1,0 +1,21 @@
+---
+zwavejs_enabled: false
+zwavejs_available_externally: false
+
+# directories
+zwavejs_data_directory: "{{ docker_home }}/zwavejs-server/store"
+
+# network
+zwavejs_port: "8091"
+zwavejs_port_ws: "3000"
+zwavejs_hostname: "zwavejs"
+
+# docker
+zwavejs_container_name: "zwavejs-server"
+zwavejs_image_name: "zwavejs/zwave-js-ui"
+zwavejs_image_version: latest
+
+# specs
+zwavejs_memory: 2g
+
+zwavejs_device: "/dev/serial/by-id/usb-0658_0200-if00"
