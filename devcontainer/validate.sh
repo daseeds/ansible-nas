@@ -8,8 +8,11 @@ if [[ "$node_major" != '18' ]]; then
   exit 1
 fi
 
-echo 'Installing Ansible Galaxy dependencies...'
-ansible-galaxy install -r requirements.yml
+echo 'Installing Ansible Galaxy roles...'
+ansible-galaxy role install -r requirements.yml
+
+echo 'Installing Ansible Galaxy collections...'
+ansible-galaxy collection install -r requirements.yml
 
 echo 'Checking Ansible syntax...'
 ansible-playbook --syntax-check -i inventories/sample/inventory nas-reorder.yml
