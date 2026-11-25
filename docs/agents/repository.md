@@ -6,8 +6,8 @@ This guide describes where changes belong and how to validate them. Use the term
 
 | Path | Purpose |
 | --- | --- |
-| `nas.yml` | Canonical Ansible-NAS playbook. It configures the host and applies the selected roles. |
-| `nas-reorder.yml` | Alternate playbook with a reordered and materially different role list. It is not the default installation path. |
+| `nas-reorder.yml` | Canonical installation playbook. Use it to configure the host and apply the selected roles. |
+| `nas.yml` | Do not use this playbook for installation; its role list differs materially from the canonical install playbook. |
 | `group_vars/all.yml` | Shared defaults and configuration options. |
 | `inventories/<name>/inventory` | Hosts and groups for one deployment. |
 | `inventories/<name>/group_vars/nas.yml` | Per-deployment overrides for shared settings and application options. |
@@ -27,17 +27,17 @@ When adding an application, follow `roles/hello_world/` and `CONTRIBUTING.md`. P
 3. Review the target inventory and variables, then run the **canonical** playbook, for example:
 
    ```sh
-   ansible-playbook -i inventories/sample/inventory nas.yml -b -K
+   ansible-playbook -i inventories/sample/inventory nas-reorder.yml -b -K
    ```
 
-`nas.yml` is the installation path documented for operators. `nas-reorder.yml` is an alternate playbook whose role set and ordering differ; do not substitute it for `nas.yml` unless intentionally working with that variant. A role must be included in the playbook to be applied by it.
+`nas-reorder.yml` is the correct installation playbook. Do not use `nas.yml` to install Ansible-NAS. The two files differ in their role sets and ordering, so a role must be included in `nas-reorder.yml` to be applied by the documented installation flow.
 
 ## Testing and linting
 
 CI's lint job runs:
 
 ```sh
-ansible-lint nas.yml
+ansible-lint nas-reorder.yml
 yamllint .
 ```
 
@@ -61,5 +61,5 @@ molecule -c ../../tests/molecule/base.yml test
 ## Repository-specific cautions
 
 - Keep deployment-specific values in the appropriate inventory; do not copy private inventory data into examples or documentation.
-- Prefer the documented canonical playbook unless a change explicitly targets the alternate `nas-reorder.yml`.
+- Use `nas-reorder.yml` for installation; do not use `nas.yml` as the install playbook.
 - Read [`GLOSSARY.md`](../../GLOSSARY.md) for the NAS host, TV endpoint, and Steam Remote Play client vocabulary.

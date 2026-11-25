@@ -82,7 +82,7 @@ Document the repository for future agents and set realistic France/EU playback e
 
 ## Further Notes
 
-- The repository documents Ubuntu Server 22.04 and uses `nas.yml` as its primary installation entrypoint. `nas.yml` and `nas-reorder.yml` differ materially.
+- The correct installation playbook is `nas-reorder.yml`; do not use `nas.yml` to install. Their role sets and ordering differ materially.
 - `athena` is x86_64 with AMD Renoir integrated graphics, GDM, a Wayland session, and `tvuser`. Steam is currently installed as a Snap; its display, joystick, and `uinput` interfaces were connected when inspected.
 - The current `daseeds` inventory defines `athena` as a local Ansible connection. The agreed setup changes it to SSH for `daseeds@athena`.
 - Steam Big Picture is designed for TV/controller use, but browser shortcuts and Remote Play with non-Steam entries are not guaranteed; test the complete flow on the target.

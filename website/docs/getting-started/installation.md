@@ -39,4 +39,4 @@ Before running anything, check out the playbook and understand what it does. ***
 
 5. Install the dependent roles: `ansible-galaxy install -r requirements.yml`.
 
-6. Run the playbook - `ansible-playbook -i inventories/my-ansible-nas/inventory nas.yml -b -K`
+6. Run the playbook - `ansible-playbook -i inventories/my-ansible-nas/inventory nas-reorder.yml -b -K`
