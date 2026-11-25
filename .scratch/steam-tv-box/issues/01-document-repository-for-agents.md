@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
-- [ ] Explain the major repository areas and distinguish the canonical installation flow from the alternate playbook.
-- [ ] Document where inventory overrides, roles, application documentation, and tests belong.
-- [ ] Describe the established linting and Molecule workflows.
-- [ ] Define the agreed NAS host, TV endpoint, and Steam Remote Play client terms without implementation details.
+- [x] Explain the major repository areas and distinguish the canonical installation flow from the alternate playbook.
+- [x] Document where inventory overrides, roles, application documentation, and tests belong.
+- [x] Describe the established linting and Molecule workflows.
+- [x] Define the agreed NAS host, TV endpoint, and Steam Remote Play client terms without implementation details.
