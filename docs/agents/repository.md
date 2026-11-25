@@ -69,13 +69,13 @@ systemctl --user enable --now podman.socket
 
 The wrapper builds the validation image with Podman and runs it as the current user, mounting the checkout at `/workspace` and the rootless Podman socket. Molecule's Docker driver uses Podman's Docker-compatible API; the wrapper also adjusts the shared Molecule config so test instances receive the correct host socket. The container runs with SELinux labeling disabled to access that socket without relabeling the checkout. When `SSH_AUTH_SOCK` is set on the host, its socket is mounted for remote Ansible checks; it is never copied into the image. Without an SSH agent, validation still runs, but authenticated remote checks are unavailable. Use the normal inventory and command for remote checks, for example `ansible -i inventories/daseeds/inventory all -m ping`.
 
-When running OpenCode as a Flatpak, the sandbox normally blocks launching host commands. The safest option is to run `./devcontainer/run.sh` from a host terminal. To allow the OpenCode Flatpak to invoke host Podman, grant `org.freedesktop.Flatpak` access and restart OpenCode:
+When running OpenCode as a Flatpak, the sandbox normally blocks launching host commands. The safest option is to run `./devcontainer/run.sh` from a host terminal. To allow the OpenCode Flatpak to invoke host Podman, run this override from a host terminal and restart OpenCode:
 
 ```sh
 flatpak override --user --talk-name=org.freedesktop.Flatpak ai.opencode.opencode
 ```
 
-This permission allows the app to spawn arbitrary host commands as your user, so only grant it if that broader host access is acceptable. The runner detects the Flatpak environment and uses `flatpak-spawn --host` when enabled.
+This permission allows the app to spawn arbitrary host commands as your user, so only grant it if that broader host access is acceptable. The runner detects the Flatpak environment and uses `flatpak-spawn --host` when enabled. The mounted Podman API socket also lets the validation container manage containers belonging to your rootless Podman user. If SSH-agent forwarding is enabled, its socket path must be accessible from the host; otherwise run the workflow from a host terminal where `SSH_AUTH_SOCK` is set.
 
 The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
 
