@@ -1,0 +1,44 @@
+---
+- name: Prepare the TV endpoint test user
+  hosts: all
+  become: true
+  tasks:
+    - name: Create the TV session user
+      ansible.builtin.user:
+        name: tvuser
+        state: present
+
+    - name: Create existing Steam Snap data as a preservation sentinel
+      ansible.builtin.file:
+        path: /home/tvuser/snap/steam/common
+        state: directory
+        owner: tvuser
+        group: tvuser
+        mode: '0755'
+
+    - name: Write the Steam Snap data preservation sentinel
+      ansible.builtin.copy:
+        dest: /home/tvuser/snap/steam/common/keep.txt
+        content: Existing Steam Snap data must remain untouched.
+        owner: tvuser
+        group: tvuser
+        mode: '0644'
+
+    - name: Apply the role without opting in
+      ansible.builtin.include_role:
+        name: tv_endpoint
+
+    - name: Check that the default-off role did not install Steam
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Check that the default-off role did not configure autostart
+      ansible.builtin.stat:
+        path: /home/tvuser/.config/autostart/steam-big-picture.desktop
+      register: tv_endpoint_autostart
+
+    - name: Assert the role defaults to leaving the TV session unchanged
+      ansible.builtin.assert:
+        that:
+          - "'steam-installer' not in ansible_facts['packages']"
+          - not tv_endpoint_autostart.stat.exists

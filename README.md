@@ -109,6 +109,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [TimeMachine](https://github.com/awlx/samba-timemachine) - Samba-based mac backup server
 * [Traefik](https://traefik.io/) - Web proxy and SSL certificate manager
 * [Transmission](https://transmissionbt.com/) - BitTorrent client (with OpenVPN if you have a supported VPN provider)
+* TV endpoint - Optional local Steam Big Picture session for TV use
 * [Ubooquity](http://vaemendis.net/ubooquity/) - Book and comic server
 * [uTorrent](https://www.utorrent.com/) - The best torrent downloading app for beginners
 * [Valheim Server](https://github.com/mbround18/valheim-docker) - Valheim dedicated gameserver manager.

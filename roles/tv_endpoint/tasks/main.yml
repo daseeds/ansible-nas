@@ -1,0 +1,94 @@
+---
+- name: Configure the TV endpoint
+  block:
+    - name: Check that the TV endpoint runs Ubuntu
+      ansible.builtin.assert:
+        that:
+          - ansible_distribution == 'Ubuntu'
+        fail_msg: The TV endpoint role requires Ubuntu.
+
+    - name: Look up the TV session user
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ tv_endpoint_user }}"
+
+    - name: Set the TV session user's home directory
+      ansible.builtin.set_fact:
+        tv_endpoint_user_home: "{{ ansible_facts['getent_passwd'][tv_endpoint_user][4] }}"
+
+    - name: Check configured foreign APT architectures
+      ansible.builtin.command:
+        argv:
+          - dpkg
+          - --print-foreign-architectures
+      register: tv_endpoint_foreign_architectures
+      changed_when: false
+
+    - name: Enable the i386 APT architecture for Steam
+      ansible.builtin.command:
+        argv:
+          - dpkg
+          - --add-architecture
+          - i386
+      when: "'i386' not in tv_endpoint_foreign_architectures.stdout_lines"
+      changed_when: true
+
+    - name: Enable the Ubuntu multiverse repository for Steam
+      ansible.builtin.apt_repository:
+        repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} multiverse"
+        filename: tv-endpoint-steam
+        state: present
+
+    - name: Install Steam from Ubuntu APT
+      ansible.builtin.apt:
+        name: steam-installer
+        state: present
+        update_cache: true
+
+    - name: Check for the Snap command
+      ansible.builtin.stat:
+        path: /usr/bin/snap
+      register: tv_endpoint_snap_command
+
+    - name: Check whether the Steam Snap is installed
+      ansible.builtin.command:
+        argv:
+          - snap
+          - list
+          - steam
+      register: tv_endpoint_snap_status
+      changed_when: false
+      failed_when: false
+      when: tv_endpoint_snap_command.stat.exists
+
+    - name: Disable the Steam Snap without changing its data
+      community.general.snap:
+        name: steam
+        state: disabled
+      when:
+        - tv_endpoint_snap_status is not skipped
+        - tv_endpoint_snap_status.rc == 0
+
+    - name: Create the Steam autostart directory for the TV session
+      ansible.builtin.file:
+        path: "{{ tv_endpoint_user_home }}/.config/autostart"
+        state: directory
+        owner: "{{ tv_endpoint_user }}"
+        group: "{{ tv_endpoint_user }}"
+        mode: '0755'
+
+    - name: Start Steam Big Picture at the next TV session login
+      ansible.builtin.copy:
+        dest: "{{ tv_endpoint_user_home }}/.config/autostart/steam-big-picture.desktop"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Steam Big Picture
+          Comment=Start Steam in Big Picture mode for the TV session
+          Exec=/usr/games/steam -tenfoot
+          Terminal=false
+          X-GNOME-Autostart-enabled=true
+        owner: "{{ tv_endpoint_user }}"
+        group: "{{ tv_endpoint_user }}"
+        mode: '0644'
+  when: tv_endpoint_enabled | bool

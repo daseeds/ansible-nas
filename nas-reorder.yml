@@ -41,6 +41,10 @@
         - ansible-nas-docker
         - ansible-nas
 
+    - role: tv_endpoint
+      tags:
+        - tv_endpoint
+
     ###
     ### Stacks
     ###

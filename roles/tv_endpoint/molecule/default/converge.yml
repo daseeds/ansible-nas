@@ -1,0 +1,10 @@
+---
+- name: Converge the enabled TV endpoint
+  hosts: all
+  become: true
+  tasks:
+    - name: Include the enabled TV endpoint role
+      ansible.builtin.include_role:
+        name: tv_endpoint
+      vars:
+        tv_endpoint_enabled: true

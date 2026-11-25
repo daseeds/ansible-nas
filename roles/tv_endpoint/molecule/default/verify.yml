@@ -1,0 +1,42 @@
+---
+- name: Verify the enabled TV endpoint configuration
+  hosts: all
+  become: true
+  tasks:
+    - name: Gather installed package facts
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Read the Steam Big Picture autostart entry
+      ansible.builtin.slurp:
+        src: /home/tvuser/.config/autostart/steam-big-picture.desktop
+      register: tv_endpoint_autostart
+
+    - name: Read the existing Steam Snap data sentinel
+      ansible.builtin.slurp:
+        src: /home/tvuser/snap/steam/common/keep.txt
+      register: tv_endpoint_snap_data
+
+    - name: Check for the Snap command
+      ansible.builtin.stat:
+        path: /usr/bin/snap
+      register: tv_endpoint_snap_command
+
+    - name: Check whether the Steam Snap is disabled
+      ansible.builtin.command:
+        argv:
+          - snap
+          - list
+          - steam
+      register: tv_endpoint_snap_status
+      changed_when: false
+      failed_when: false
+      when: tv_endpoint_snap_command.stat.exists
+
+    - name: Assert the APT client, autostart, and Snap-data preservation
+      ansible.builtin.assert:
+        that:
+          - "'steam-installer' in ansible_facts['packages']"
+          - "'Exec=/usr/games/steam -tenfoot' in (tv_endpoint_autostart.content | b64decode)"
+          - "'Existing Steam Snap data must remain untouched.' in (tv_endpoint_snap_data.content | b64decode)"
+          - tv_endpoint_snap_status is skipped or 'disabled' in tv_endpoint_snap_status.stdout

@@ -1,0 +1,17 @@
+---
+provisioner:
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+scenario:
+  test_sequence:
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
