@@ -23,7 +23,14 @@ When adding an application, follow `roles/hello_world/` and `CONTRIBUTING.md`. P
 ## Deployment flow
 
 1. Create or choose an inventory directory under `inventories/`. The inventory file names the target hosts; `group_vars/nas.yml` overrides values from `group_vars/all.yml`.
-2. Install the external Ansible dependencies with `ansible-galaxy install -r requirements.yml`.
+2. Install Galaxy roles and collections separately:
+
+   ```sh
+   ansible-galaxy role install -r requirements.yml
+   ansible-galaxy collection install -r requirements.yml
+   ```
+
+   `ansible-galaxy install` installs roles only; it does not install the collections listed in the same requirements file. Keep the role dependencies in `requirements.yml` consistent with the roles named in `nas-reorder.yml`.
 3. Review the target inventory and variables, then run the **canonical** playbook, for example:
 
    ```sh
@@ -40,6 +47,16 @@ CI's lint job runs:
 ansible-lint nas-reorder.yml
 yamllint .
 ```
+
+Check Ansible playbook syntax locally with the sample inventory:
+
+```sh
+ansible-playbook --syntax-check -i inventories/sample/inventory nas-reorder.yml
+```
+
+Syntax checking resolves every role in the playbook, so install both Galaxy roles and collections first. The sample inventory is for syntax validation; use the intended deployment inventory for a real run.
+
+**Current validation baseline (2026-11-25):** the Podman validation image's syntax check passed, with a compatibility warning that `vladgh.samba` does not support the installed Ansible 2.15.13. `ansible-lint nas-reorder.yml` then exited with 24 existing violations across the repository (tracked in [issue 07](../../.scratch/steam-tv-box/issues/07-fix-ansible-lint-violations.md)). The validation script stops at the first failing command, so YAML/Markdown lint, website build, and Molecule were not reached in that run. This is a repository lint baseline, not a Podman startup failure; rerun the remaining commands individually or fix the lint findings before expecting the full script to finish successfully.
 
 Markdown files are checked with Markdownlint (version `0.32.2` in CI). The documentation workflow also builds the website using Node 18:
 
@@ -77,7 +94,7 @@ flatpak override --user --talk-name=org.freedesktop.Flatpak ai.opencode.opencode
 
 This permission allows the app to spawn arbitrary host commands as your user, so only grant it if that broader host access is acceptable. The runner detects the Flatpak environment and uses `flatpak-spawn --host` when enabled. The mounted Podman API socket also lets the validation container manage containers belonging to your rootless Podman user. If SSH-agent forwarding is enabled, its socket path must be accessible from the host; otherwise run the workflow from a host terminal where `SSH_AUTH_SOCK` is set.
 
-The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
+The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios in order. It stops at the first failed command. It may take a while and requires network access for dependency installation and image pulls.
 
 To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Containerfile`; update Ansible roles and collections in `requirements.yml` as usual. Some existing Galaxy entries do not pin a version and therefore resolve to the latest compatible release; pin them in `requirements.yml` when an immutable dependency snapshot is needed. Then rerun `./devcontainer/run.sh` to rebuild and validate. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
 
