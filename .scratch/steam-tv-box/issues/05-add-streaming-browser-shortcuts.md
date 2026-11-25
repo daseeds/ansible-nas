@@ -1,8 +1,8 @@
-# 04: Add streaming browser shortcuts
+# 05: Add streaming browser shortcuts
 
 **What to build:** From Steam Big Picture, the couch user can open Chrome shortcuts for Netflix, Max/HBO, Canal+, and YouTube, then sign in manually and use the services within their documented France/EU browser limits.
 
-**Blocked by:** 03: Add the opt-in Steam couch session.
+**Blocked by:** 04: Add the opt-in Steam couch session.
 
 **Status:** ready-for-agent
 

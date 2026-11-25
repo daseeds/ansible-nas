@@ -1,8 +1,8 @@
-# 05: Enable controller-based Steam Remote Play
+# 06: Enable controller-based Steam Remote Play
 
 **What to build:** The couch user can use Xbox-compatible and Nintendo Switch controllers with `athena` as a Steam Remote Play client, streaming a game from the separate Linux gaming PC.
 
-**Blocked by:** 03: Add the opt-in Steam couch session.
+**Blocked by:** 04: Add the opt-in Steam couch session.
 
 **Status:** ready-for-agent
 

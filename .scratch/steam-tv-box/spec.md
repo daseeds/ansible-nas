@@ -14,7 +14,9 @@ Add an optional host-level TV role to the canonical Ansible deployment. It shoul
 
 Replace the Steam Snap with Ubuntu's APT `steam-installer`, but leave Snap data untouched and use a fresh Steam profile. Keep Steam/provider sign-in and pairing manual; do not store credentials in Ansible. Keep the existing NAS setup intact, configure the inventory to manage `athena` over SSH as `daseeds`, and do not automatically reboot or restart the active graphical session.
 
-Document the repository for future agents and set realistic France/EU playback expectations. Netflix and ordinary YouTube are the strongest Linux-browser matches for 1080p; Max may be limited to 720p, while Canal+ and paid YouTube titles may be lower quality or unsupported.
+Prepare a repeatable Docker-based development container for running Ansible and the repository's validation requirements. It should use the host Docker daemon for Molecule, mount the working tree, and use the operator's SSH agent rather than baking credentials into the image. Document the repository and container workflow for future agents.
+
+Set realistic France/EU playback expectations. Netflix and ordinary YouTube are the strongest Linux-browser matches for 1080p; Max may be limited to 720p, while Canal+ and paid YouTube titles may be lower quality or unsupported.
 
 ## User Stories
 
@@ -45,11 +47,13 @@ Document the repository for future agents and set realistic France/EU playback e
 25. As a future agent, I want agreed terms such as NAS host, TV endpoint, and Steam Remote Play client defined consistently, so that design discussions and documentation use the same vocabulary.
 26. As a maintainer, I want documentation to distinguish provider limitations from Ansible limitations, so that unsupported HD playback is not misdiagnosed as a deployment defect.
 27. As the owner, I want to test the setup with both controllers and the separate gaming PC, so that the intended couch workflow is checked end to end.
+28. As a future agent, I want a repeatable Docker development environment for Ansible, Molecule, linting, and documentation checks, so that I can validate changes without manually provisioning the host toolchain.
 
 ## Implementation Decisions
 
 - Use one host-level Ansible role as the main module and test seam, included in the canonical deployment and controlled by a default-off opt-in setting.
 - Enable TV support only for `athena` through host inventory; keep the existing NAS roles and services intact.
+- Provide a Docker-based development container for Ansible, Galaxy dependencies, Molecule, linting, and documentation validation; use the host Docker daemon and do not bake SSH credentials into the image.
 - Reuse the existing GDM auto-login session and `tvuser` account.
 - Install Chrome and Ubuntu's APT `steam-installer`; replace the Steam Snap without purging, copying, or migrating its protected data.
 - Start Steam Big Picture for the couch session and provide browser shortcuts for streaming services.
@@ -64,6 +68,7 @@ Document the repository for future agents and set realistic France/EU playback e
 - Good tests cross the Ansible role interface and verify observable behavior, rather than asserting task names or internal implementation details.
 - Verify that the default-off configuration leaves non-TV hosts unchanged.
 - Exercise the enabled role on Ubuntu 22.04 using the repository's Molecule conventions, checking the resulting host behavior and safe repeatability.
+- Verify the development container can run the repository's Ansible syntax/lint checks, YAML and Markdown linting, website build, and Molecule tests.
 - Use acceptance checks on `athena` for couch-session login, Steam Big Picture startup, browser shortcuts, and both controller types.
 - With the separate Linux gaming PC available, test Remote Play end to end, including pairing and returning from browser use.
 - Manually verify provider sign-in and playback at the TV. DRM and provider policies make playback quality unsuitable for a deterministic automated test.
@@ -79,12 +84,13 @@ Document the repository for future agents and set realistic France/EU playback e
 - Bypassing DRM, regional restrictions, or provider-imposed browser limitations.
 - Guaranteeing 1080p for every service, 4K/HDR playback, or native streaming applications.
 - Automatically rebooting the host or forcibly restarting the active desktop session.
+- Using the development container as a production/runtime container on `athena`.
 
 ## Further Notes
 
 - The correct installation playbook is `nas-reorder.yml`; do not use `nas.yml` to install. Their role sets and ordering differ materially.
 - `athena` is x86_64 with AMD Renoir integrated graphics, GDM, a Wayland session, and `tvuser`. Steam is currently installed as a Snap; its display, joystick, and `uinput` interfaces were connected when inspected.
-- The current `daseeds` inventory defines `athena` as a local Ansible connection. The agreed setup changes it to SSH for `daseeds@athena`.
+- The `daseeds` inventory now targets `athena` over SSH using the `daseeds` account. `ssh athena true` succeeded, but Ansible connectivity has not been verified because the Ansible CLI was unavailable in that environment.
 - Steam Big Picture is designed for TV/controller use, but browser shortcuts and Remote Play with non-Steam entries are not guaranteed; test the complete flow on the target.
 - France/EU provider guidance checked for this spec:
   - [Netflix browser requirements](https://help.netflix.com/en/node/30081) list Linux browsers up to Full HD, while warning that Linux configurations are not guaranteed.

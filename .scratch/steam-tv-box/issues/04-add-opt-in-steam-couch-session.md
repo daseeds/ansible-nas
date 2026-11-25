@@ -1,8 +1,8 @@
-# 03: Add the opt-in Steam couch session
+# 04: Add the opt-in Steam couch session
 
 **What to build:** When enabled for `athena`, Ansible prepares the existing `tvuser` session to launch Steam Big Picture as the TV interface, while keeping NAS duties intact and leaving other hosts unchanged.
 
-**Blocked by:** 02: Make athena manageable over SSH.
+**Blocked by:** 02: Make athena manageable over SSH; 03: Prepare a Docker validation container.
 
 **Status:** ready-for-agent
 
