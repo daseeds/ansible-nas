@@ -69,6 +69,14 @@ systemctl --user enable --now podman.socket
 
 The wrapper builds the validation image with Podman and runs it as the current user, mounting the checkout at `/workspace` and the rootless Podman socket. Molecule's Docker driver uses Podman's Docker-compatible API; the wrapper also adjusts the shared Molecule config so test instances receive the correct host socket. The container runs with SELinux labeling disabled to access that socket without relabeling the checkout. When `SSH_AUTH_SOCK` is set on the host, its socket is mounted for remote Ansible checks; it is never copied into the image. Without an SSH agent, validation still runs, but authenticated remote checks are unavailable. Use the normal inventory and command for remote checks, for example `ansible -i inventories/daseeds/inventory all -m ping`.
 
+When running OpenCode as a Flatpak, the sandbox normally blocks launching host commands. The safest option is to run `./devcontainer/run.sh` from a host terminal. To allow the OpenCode Flatpak to invoke host Podman, grant `org.freedesktop.Flatpak` access and restart OpenCode:
+
+```sh
+flatpak override --user --talk-name=org.freedesktop.Flatpak ai.opencode.opencode
+```
+
+This permission allows the app to spawn arbitrary host commands as your user, so only grant it if that broader host access is acceptable. The runner detects the Flatpak environment and uses `flatpak-spawn --host` when enabled.
+
 The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
 
 To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Containerfile`; update Ansible roles and collections in `requirements.yml` as usual. Some existing Galaxy entries do not pin a version and therefore resolve to the latest compatible release; pin them in `requirements.yml` when an immutable dependency snapshot is needed. Then rerun `./devcontainer/run.sh` to rebuild and validate. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
