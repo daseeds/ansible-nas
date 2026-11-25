@@ -29,5 +29,5 @@ markdownlint '**/*.md'
 echo 'Building the documentation website...'
 (cd website && npm ci && npm run build)
 
-echo 'Running Molecule role tests against the host Docker daemon...'
+echo 'Running Molecule role tests against the host Podman API...'
 ./tests/test.sh

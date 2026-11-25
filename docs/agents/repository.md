@@ -49,29 +49,29 @@ npm ci
 npm run build
 ```
 
-Role integration tests use Molecule with Docker and the shared configuration in `tests/molecule/base.yml`. A role scenario lives in `roles/<name>/molecule/`; `tests/github-test-matrix.sh` discovers roles with a `molecule/` directory for the integration workflow. Run one role's scenario from its directory:
+Role integration tests use Molecule with a Docker-compatible container API and the shared configuration in `tests/molecule/base.yml`. A role scenario lives in `roles/<name>/molecule/`; `tests/github-test-matrix.sh` discovers roles with a `molecule/` directory for the integration workflow. If the API is available at `/var/run/docker.sock`, run one role's scenario from its directory:
 
 ```sh
 cd roles/hello_world
 molecule -c ../../tests/molecule/base.yml test
 ```
 
-`tests/test.sh` runs the same Molecule command for every role with a scenario, so it is the broad local integration suite and requires Docker. These tests exercise application roles; they do not replace reviewing inventory changes or validating a deployment on its target host.
+`tests/test.sh` runs the same Molecule command for every role with a scenario, so it is the broad local integration suite and requires Docker or Podman with its Docker-compatible API enabled. On Bazzite-DX, use `./devcontainer/run.sh`; it configures the rootless Podman socket for Molecule. These tests exercise application roles; they do not replace reviewing inventory changes or validating a deployment on its target host.
 
-## Docker validation environment
+## Podman validation environment
 
-The repository-root `compose.yaml` and `.devcontainer/Dockerfile` provide a repeatable environment for the checks above. The host must have Docker Compose and a running Docker daemon. From the repository root, build the image and run the full validation workflow:
+`.devcontainer/Containerfile` and `devcontainer/run.sh` provide a repeatable environment for the checks above. On Bazzite-DX, enable the rootless Podman API socket and run the workflow from the repository root:
 
 ```sh
-docker compose build
-docker compose run --rm dev ./devcontainer/validate.sh
+systemctl --user enable --now podman.socket
+./devcontainer/run.sh
 ```
 
-Compose bind-mounts the current checkout at `/workspace` and the host Docker socket, so Molecule uses the host daemon. When `SSH_AUTH_SOCK` is set on the host, its socket is mounted into the container for remote Ansible checks; the socket is never copied into the image. Without an SSH agent, validation still runs, but authenticated remote checks are unavailable. Use the normal inventory and command for remote checks, for example `ansible -i inventories/daseeds/inventory all -m ping`.
+The wrapper builds the validation image with Podman and runs it as the current user, mounting the checkout at `/workspace` and the rootless Podman socket. Molecule's Docker driver uses Podman's Docker-compatible API; the wrapper also adjusts the shared Molecule config so test instances receive the correct host socket. The container runs with SELinux labeling disabled to access that socket without relabeling the checkout. When `SSH_AUTH_SOCK` is set on the host, its socket is mounted for remote Ansible checks; it is never copied into the image. Without an SSH agent, validation still runs, but authenticated remote checks are unavailable. Use the normal inventory and command for remote checks, for example `ansible -i inventories/daseeds/inventory all -m ping`.
 
 The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
 
-To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Dockerfile`; update Ansible roles and collections in `requirements.yml` as usual. Some existing Galaxy entries do not pin a version and therefore resolve to the latest compatible release; pin them in `requirements.yml` when an immutable dependency snapshot is needed. Then rebuild with `docker compose build --no-cache` and rerun the validation command. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
+To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Containerfile`; update Ansible roles and collections in `requirements.yml` as usual. Some existing Galaxy entries do not pin a version and therefore resolve to the latest compatible release; pin them in `requirements.yml` when an immutable dependency snapshot is needed. Then rerun `./devcontainer/run.sh` to rebuild and validate. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
 
 ## Repository-specific cautions
 
