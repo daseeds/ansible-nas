@@ -71,7 +71,7 @@ Compose bind-mounts the current checkout at `/workspace` and the host Docker soc
 
 The validation script installs Galaxy roles and collections from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
 
-To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Dockerfile`; update Ansible roles and collections in `requirements.yml` as usual. Then rebuild with `docker compose build --no-cache` and rerun the validation command. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
+To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Dockerfile`; update Ansible roles and collections in `requirements.yml` as usual. Some existing Galaxy entries do not pin a version and therefore resolve to the latest compatible release; pin them in `requirements.yml` when an immutable dependency snapshot is needed. Then rebuild with `docker compose build --no-cache` and rerun the validation command. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
 
 ## Repository-specific cautions
 
