@@ -58,6 +58,21 @@ molecule -c ../../tests/molecule/base.yml test
 
 `tests/test.sh` runs the same Molecule command for every role with a scenario, so it is the broad local integration suite and requires Docker. These tests exercise application roles; they do not replace reviewing inventory changes or validating a deployment on its target host.
 
+## Docker validation environment
+
+The repository-root `compose.yaml` and `.devcontainer/Dockerfile` provide a repeatable environment for the checks above. The host must have Docker Compose and a running Docker daemon. From the repository root, build the image and run the full validation workflow:
+
+```sh
+docker compose build
+docker compose run --rm dev ./devcontainer/validate.sh
+```
+
+Compose bind-mounts the current checkout at `/workspace` and the host Docker socket, so Molecule uses the host daemon. When `SSH_AUTH_SOCK` is set on the host, its socket is mounted into the container for remote Ansible checks; the socket is never copied into the image. Without an SSH agent, validation still runs, but authenticated remote checks are unavailable. Use the normal inventory and command for remote checks, for example `ansible -i inventories/daseeds/inventory all -m ping`.
+
+The validation script installs Galaxy dependencies from `requirements.yml`, then runs Ansible syntax and lint checks, YAML and Markdown lint, the Node 18 website build, and all discovered Molecule scenarios. It may take a while and requires network access for dependency installation and image pulls.
+
+To update the environment, change the pinned Python tool versions or `markdownlint-cli` version in `.devcontainer/Dockerfile`; update Ansible roles and collections in `requirements.yml` as usual. Then rebuild with `docker compose build --no-cache` and rerun the validation command. The website's Node version is supplied by the Debian Bookworm package set and should be checked against the required Node 18 build before changing the base image.
+
 ## Repository-specific cautions
 
 - Keep deployment-specific values in the appropriate inventory; do not copy private inventory data into examples or documentation.
