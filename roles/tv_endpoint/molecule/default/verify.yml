@@ -12,6 +12,11 @@
         src: /home/tvuser/.config/autostart/steam-big-picture.desktop
       register: tv_endpoint_autostart
 
+    - name: Read Steam's controller access rules
+      ansible.builtin.slurp:
+        src: /lib/udev/rules.d/60-steam-input.rules
+      register: tv_endpoint_controller_rules
+
     - name: Read the streaming-service launchers
       ansible.builtin.slurp:
         src: "/home/tvuser/.local/share/applications/{{ item }}-tv.desktop"
@@ -43,10 +48,13 @@
       failed_when: false
       when: tv_endpoint_snap_command.stat.exists
 
-    - name: Assert Chrome, streaming launchers, and existing Steam behavior
+    - name: Assert controller support, Chrome, streaming launchers, and Steam behavior
       ansible.builtin.assert:
         that:
           - "'steam-installer' in ansible_facts['packages']"
+          - "'steam-devices' in ansible_facts['packages']"
+          - "'Nintendo Switch Pro Controller' in (tv_endpoint_controller_rules.content | b64decode)"
+          - "'Nintendo Switch Joy-Con' in (tv_endpoint_controller_rules.content | b64decode)"
           - "'google-chrome-stable' in ansible_facts['packages']"
           - "'Exec=/usr/games/steam -tenfoot' in (tv_endpoint_autostart.content | b64decode)"
           - tv_endpoint_streaming_launchers.results | length == 4

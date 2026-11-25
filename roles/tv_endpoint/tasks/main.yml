@@ -102,6 +102,11 @@
         state: present
         update_cache: true
 
+    - name: Install Steam controller device rules
+      ansible.builtin.apt:
+        name: steam-devices
+        state: present
+
     - name: Check for the Snap command
       ansible.builtin.stat:
         path: /usr/bin/snap
