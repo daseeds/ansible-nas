@@ -12,7 +12,7 @@
 # ansible-nas ansible_host=192.168.1.30
 
 ## Example when running directly on your Ansible-NAS server
-athena ansible_connection=ssh ansible_user=daseeds ansible_host=192.168.1.99
+athena ansible_connection=ssh ansible_user=daseeds
 
 [nas]
 athena
