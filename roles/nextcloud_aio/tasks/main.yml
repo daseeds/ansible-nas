@@ -1,0 +1,66 @@
+---
+- name: Start nextcloud_aio
+  block:
+    - name: Create nextcloud_aio directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ nextcloud_aio_config_directory }}"
+        - "{{ nextcloud_aio_data_directory }}"
+
+    - name: Create Nextcloud network
+      community.docker.docker_network:
+        name: "{{ nextcloud_aio_network_name }}"
+        enable_ipv6: true
+
+    - name: Create Nextcloud volume
+      community.docker.docker_volume:
+        name: nextcloud_aio_mastercontainer
+        driver: local
+        driver_options:
+          type: auto
+          o: bind
+          device: "{{ nextcloud_aio_config_directory }}"
+
+    - name: nextcloud_aio Docker Container
+      community.docker.docker_container:
+        name: "{{ nextcloud_aio_container_name }}"
+        image: "{{ nextcloud_aio_image_name }}:{{ nextcloud_aio_image_version }}"
+        pull: true
+        init: true
+        networks:
+          - name: "{{ nextcloud_aio_network_name }}"
+        network_mode: bridge
+        volumes:
+          - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        ports:
+          #- "{{ nextcloud_aio_portacme }}:80"
+          - "{{ nextcloud_aio_portnossl }}:8080"
+          #- "{{ nextcloud_aio_portssl }}:8443"
+        restart_policy: unless-stopped
+        memory: "{{ nextcloud_aio_memory }}"
+        env:
+          NEXTCLOUD_DATADIR: "{{ nextcloud_aio_data_directory }}"
+          SKIP_DOMAIN_VALIDATION: "true"
+          APACHE_PORT: "11000"
+          APACHE_IP_BINDING: "0.0.0.0"
+          APACHE_ADDITIONAL_NETWORK: ""          
+        labels:
+          homepage.group: Media
+          homepage.name: nextcloud
+          homepage.icon: nextcloud.png
+          homepage.href: "http://{{ nextcloud_aio_hostname }}:{{ nextcloud_aio_portnossl }}"
+          homepage.description: Open source dropbox alternative
+          homepage.widget.type: nextcloud
+          homepage.widget.url: "http://{{ nextcloud_aio_hostname }}:{{ nextcloud_aio_portnossl }}"
+  when: nextcloud_aio_enabled is true
+
+- name: Stop nextcloud_aio
+  block:
+    - name: Stop nextcloud_aio
+      community.docker.docker_container:
+        name: "{{ nextcloud_aio_container_name }}"
+        state: absent
+  when: nextcloud_aio_enabled is false

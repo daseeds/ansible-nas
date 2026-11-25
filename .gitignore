@@ -4,6 +4,7 @@ site
 *.retry
 *.log
 vault.yml
+*.secret
 
 .cache
 roles/bertvv.samba
@@ -20,3 +21,4 @@ Session.vim
 
 # IntelliJ
 /.idea/
+inventories/daseeds/group_vars/Untitled-1.json

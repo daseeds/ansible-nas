@@ -187,6 +187,14 @@
       tags:
         - hello_world
 
+    - role: matter
+      tags:
+        - matter
+
+    - role: zwavejs
+      tags:
+        - zwavejs
+
     - role: homeassistant
       tags:
         - homeassistant
@@ -214,6 +222,10 @@
     - role: jellyfin
       tags:
         - jellyfin
+
+    - role: jellyseerr
+      tags:
+        - jellyseerr
 
     - role: joomla
       tags:
@@ -294,6 +306,10 @@
     - role: nextcloud
       tags:
         - nextcloud
+
+    - role: nextcloud_aio
+      tags:
+        - nextcloud_aio
 
     - role: nomad
       tags:
@@ -436,6 +452,10 @@
     - role: utorrent
       tags:
         - utorrent
+        
+    - role: qbittorrent
+      tags:
+        - qbittorrent
 
     - role: valheim
       tags:
@@ -468,3 +488,17 @@
     - role: znc
       tags:
         - znc
+
+    - role: newt
+      tags:
+        - newt
+
+    - role: musicassistant
+      tags:
+        - musicassistant
+    - role: xyops
+      tags:
+        - xyops
+  ## Backup
+    - role: roles-ansible.restic
+      tags: restic

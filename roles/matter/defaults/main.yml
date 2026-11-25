@@ -1,0 +1,18 @@
+---
+matter_enabled: false
+matter_available_externally: false
+
+# directories
+matter_data_directory: "{{ docker_home }}/matter-server/data"
+
+# network
+matter_port: "8095"
+matter_hostname: "matter"
+
+# docker
+matter_container_name: "matter-server"
+matter_image_name: "ghcr.io/matter-js/python-matter-server"
+matter_image_version: stable
+
+# specs
+matter_memory: 2g

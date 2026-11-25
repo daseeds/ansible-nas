@@ -1,0 +1,18 @@
+---
+musicassistant_enabled: false
+musicassistant_available_externally: false
+
+# directories
+musicassistant_data_directory: "{{ docker_home }}/musicassistant"
+
+# network
+musicassistant_port: "8095"
+musicassistant_hostname: "musicassistant"
+
+# docker
+musicassistant_container_name: "music-assistant-server"
+musicassistant_image_name: "ghcr.io/music-assistant/server"
+musicassistant_image_version: latest
+
+# specs
+musicassistant_memory: 2g

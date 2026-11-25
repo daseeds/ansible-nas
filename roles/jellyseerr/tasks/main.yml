@@ -1,0 +1,43 @@
+---
+- name: Start Jellyseerr
+  block:
+    - name: Create Jellyseerr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ jellyseerr_config_directory }}"
+
+    - name: Jellyseerr Docker Container
+      community.docker.docker_container:
+        name: "{{ jellyseerr_container_name }}"
+        image: "{{ jellyseerr_image_name }}:{{ jellyseerr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ jellyseerr_config_directory }}:/app/config:rw"
+        ports:
+          - "{{ jellyseerr_port_http }}:5055"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          LOG_LEVEL: "info"
+        restart_policy: unless-stopped
+        memory: "{{ jellyseerr_memory }}"
+        labels:
+          traefik.enable: "{{ jellyseerr_available_externally | string }}"
+          traefik.http.routers.jellyfin.rule: "Host(`{{ jellyseerr_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.jellyfin.tls.certresolver: "letsencrypt"
+          traefik.http.routers.jellyfin.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.jellyfin.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
+          homepage.group: Media
+          homepage.name: Jellyseer
+          homepage.href: "http://{{ jellyseerr_hostname }}:{{ jellyseerr_port_http }}"
+  when: jellyseerr_enabled is true
+
+- name: Stop Jellyseerr
+  block:
+    - name: Stop Jellyseerr
+      community.docker.docker_container:
+        name: "{{ jellyseerr_container_name }}"
+        state: absent
+  when: jellyseerr_enabled is false

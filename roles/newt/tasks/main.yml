@@ -1,0 +1,24 @@
+---
+- name: Start Newt
+  block:
+    - name: Newt Docker Container
+      community.docker.docker_container:
+        name: "{{ newt_container_name }}"
+        image: "fosrl/newt"
+        pull: true
+        restart_policy: unless-stopped
+        memory: "{{ newt_memory }}"
+        env:
+          PANGOLIN_ENDPOINT: "{{ newt_endpoint }}"
+          NEWT_ID: "{{ newt_id }}"
+          NEWT_SECRET: "{{ newt_secret }}"
+  when: newt_enabled is true
+
+- name: Stop Newt
+  block:
+    - name: Stop Newt Application
+      community.docker.docker_container:
+        name: "{{ newt_container_name }}"
+        state: absent
+
+  when: newt_enabled is false

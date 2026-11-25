@@ -1,0 +1,35 @@
+---
+- name: Start matter
+  block:
+    - name: Create matter Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ matter_data_directory }}/config"
+
+    - name: matter Docker Container
+      community.docker.docker_container:
+        name: "{{ matter_container_name }}"
+        image: "{{ matter_image_name }}:{{ matter_image_version }}"
+        pull: true
+        volumes:
+          - "{{ matter_data_directory }}:/data/"
+          - /run/dbus:/run/dbus:ro
+        network_mode: host
+        restart_policy: unless-stopped
+        memory: "{{ matter_memory }}"
+        security_opts:
+          - apparmor:unconfined
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          LOG_LEVEL: "info"
+  when: matter_enabled is true
+
+- name: Stop matter
+  block:
+    - name: Stop matter
+      community.docker.docker_container:
+        name: "{{ matter_container_name }}"
+        state: absent
+  when: matter_enabled is false

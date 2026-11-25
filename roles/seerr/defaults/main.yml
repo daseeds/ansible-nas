@@ -1,0 +1,18 @@
+---
+# enable or disable the application
+seer_enabled: false
+seer_available_externally: false
+
+seer_hostname: "seerrlan"
+
+# directories
+seer_config_directory: "{{ docker_home }}/seerr/config"
+seer_port_http: 5055
+
+# docker
+seer_container_name: "seerr"
+seer_image_name: "ghcr.io/seerr-team/seerr"
+seer_image_version: "latest"
+
+# specs
+seer_memory: "1g"

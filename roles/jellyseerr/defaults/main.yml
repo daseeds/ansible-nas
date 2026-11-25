@@ -1,0 +1,18 @@
+---
+# enable or disable the application
+jellyseerr_enabled: false
+jellyseerr_available_externally: false
+
+jellyseerr_hostname: "jellyseerrlan"
+
+# directories
+jellyseerr_config_directory: "{{ docker_home }}/jellyseer/config"
+jellyseerr_port_http: 5055
+
+# docker
+jellyseerr_container_name: "jellyseer"
+jellyseerr_image_name: "fallenbagel/jellyseerr"
+jellyseerr_image_version: "latest"
+
+# specs
+jellyseerr_memory: "1g"
