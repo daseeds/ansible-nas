@@ -12,6 +12,16 @@
         src: /home/tvuser/.config/autostart/steam-big-picture.desktop
       register: tv_endpoint_autostart
 
+    - name: Read the streaming-service launchers
+      ansible.builtin.slurp:
+        src: "/home/tvuser/.local/share/applications/{{ item }}-tv.desktop"
+      loop:
+        - netflix
+        - max
+        - canal-plus
+        - youtube
+      register: tv_endpoint_streaming_launchers
+
     - name: Read the existing Steam Snap data sentinel
       ansible.builtin.slurp:
         src: /home/tvuser/snap/steam/common/keep.txt
@@ -33,10 +43,16 @@
       failed_when: false
       when: tv_endpoint_snap_command.stat.exists
 
-    - name: Assert the APT client, autostart, and Snap-data preservation
+    - name: Assert Chrome, streaming launchers, and existing Steam behavior
       ansible.builtin.assert:
         that:
           - "'steam-installer' in ansible_facts['packages']"
+          - "'google-chrome-stable' in ansible_facts['packages']"
           - "'Exec=/usr/games/steam -tenfoot' in (tv_endpoint_autostart.content | b64decode)"
+          - tv_endpoint_streaming_launchers.results | length == 4
+          - "'--app=https://www.netflix.com' in (tv_endpoint_streaming_launchers.results | map(attribute='content') | map('b64decode') | join(' '))"
+          - "'--app=https://www.max.com' in (tv_endpoint_streaming_launchers.results | map(attribute='content') | map('b64decode') | join(' '))"
+          - "'--app=https://www.canalplus.com' in (tv_endpoint_streaming_launchers.results | map(attribute='content') | map('b64decode') | join(' '))"
+          - "'--app=https://www.youtube.com' in (tv_endpoint_streaming_launchers.results | map(attribute='content') | map('b64decode') | join(' '))"
           - "'Existing Steam Snap data must remain untouched.' in (tv_endpoint_snap_data.content | b64decode)"
           - tv_endpoint_snap_status is skipped or 'disabled' in tv_endpoint_snap_status.stdout

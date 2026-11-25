@@ -16,6 +16,63 @@
       ansible.builtin.set_fact:
         tv_endpoint_user_home: "{{ ansible_facts['getent_passwd'][tv_endpoint_user][4] }}"
 
+    - name: Install the Google Chrome signing key
+      ansible.builtin.get_url:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        dest: /usr/share/keyrings/google-chrome.asc
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure the Google Chrome APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.asc] https://dl.google.com/linux/chrome/deb/ stable main"
+        filename: google-chrome
+        state: present
+
+    - name: Install Google Chrome with Widevine DRM support
+      ansible.builtin.apt:
+        name: google-chrome-stable
+        state: present
+        update_cache: true
+
+    - name: Create the TV user's application launcher directory
+      ansible.builtin.file:
+        path: "{{ tv_endpoint_user_home }}/.local/share/applications"
+        state: directory
+        owner: "{{ tv_endpoint_user }}"
+        group: "{{ tv_endpoint_user }}"
+        mode: '0755'
+
+    - name: Create streaming-service Chrome launchers
+      ansible.builtin.copy:
+        dest: "{{ tv_endpoint_user_home }}/.local/share/applications/{{ item.id }}-tv.desktop"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name={{ item.name }}
+          Comment=Open {{ item.name }} in Google Chrome
+          Exec=/usr/bin/google-chrome-stable --app={{ item.url }} --no-first-run
+          Icon=google-chrome
+          Terminal=false
+          Categories=Network;WebBrowser;
+        owner: "{{ tv_endpoint_user }}"
+        group: "{{ tv_endpoint_user }}"
+        mode: '0644'
+      loop:
+        - id: netflix
+          name: Netflix
+          url: https://www.netflix.com
+        - id: max
+          name: Max
+          url: https://www.max.com
+        - id: canal-plus
+          name: Canal+
+          url: https://www.canalplus.com
+        - id: youtube
+          name: YouTube
+          url: https://www.youtube.com
+
     - name: Check configured foreign APT architectures
       ansible.builtin.command:
         argv:
